@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Super Bowl Party RSVP</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .hero-image {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        form {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #0052a3;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background-color: #222;
+            border-radius: 8px;
+        }
+        
+        .bonus-image {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            display: none;
+            padding: 10px;
+            background-color: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #playMusic {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            width: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <audio id="backgroundMusic" loop>
+            <source src="NFLtheme.wav" type="audio/wav">
+        </audio>
+        
+        <img src="super-bowl-banner.png" alt="Super Bowl LIX Party" class="hero-image">
+        
+        <form id="rsvpForm">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="Winner">Who will win?</label>
+                <select id="Winner" name="Winner">
+                    <option value="Chiefs">Chiefs</option>
+                    <option value="Eagles">Eagles</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Overtime">Will the game go to overtime?</label>
+                <select id="Overtime" name="Overtime">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="PlayerPass">Total number of players to throw a pass in the game?</label>
+                <select id="PlayerPass" name="PlayerPass">
+                    <option value="Over 2.5">Over 2.5</option>
+                    <option value="Under 2.5">Under 2.5</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="KorT">What will have a higher count... number of times Kelce catches the ball or number of times we see T-Swift?</label>
+                <select id="KorT" name="KorT">
+                    <option value="Kelce">Kelce</option>
+                    <option value="Swift">Swift</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="CoinToss">Will the coin toss result in heads or tails?</label>
+                <select id="CoinToss" name="CoinToss">
+                    <option value="Heads">Heads</option>
+                    <option value="Tails">Tails</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="gatorade">What color will the gatorade bath be?</label>
+                <select id="gatorade" name="gatorade">
+                    <option value="Yellow">Yellow</option>
+                    <option value="Red">Red</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Green">Green</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="batiste">What will the dominant color of Jon Batiste's outfit be during the anthem?</label>
+                <select id="batiste" name="batiste">
+                    <option value="Red">Red</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="PassingYards">Who will have more passing yards?</label>
+                <select id="PassingYards" name="PassingYards">
+                    <option value="Patrick Mahomes">Patrick Mahomes</option>
+                    <option value="Jalen Hurts">Jalen Hurts</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="anthem">Will the National Anthem be over or under 90.5 seconds</label>
+                <select id="anthem" name="anthem">
+                    <option value="Over">Over 90.5</option>
+                    <option value="Under">Under 90.5</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="KendrickFit">What will the dominant color of Kendrick Lamar's starting outfit for the halftime show be?</label>
+                <select id="KendrickFit" name="KendrickFit">
+                    <option value="Red">Red</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="KendrickSong">What will the first song Kendrick sings be?</label>
+                <select id="KendrickSong" name="KendrickSong">
+                    <option value="Not Like Us">Not Like Us</option>
+                    <option value="Humble">Humble</option>
+                    <option value="Euphoria">Euphoria</option>
+                    <option value="Squabble Up">Squabble Up</option>
+                    <option value="King Kunta">King Kunta</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="FirstTD">Who will score the first touchdown?</label>
+                <select id="FirstTD" name="FirstTD">
+                    <option value="Saquon Barkley">Saquon Barkley</option>
+                    <option value="Jalen Hurts">Jalen Hurts</option>
+                    <option value="Kareem Hunt">Kareem Hunt</option>
+                    <option value="Travis Kelce">Travis Kelce</option>
+                    <option value="Xavier Worthy">Xavier Worthy</option>
+                    <option value="AJ Brown">AJ Brown</option>
+                    <option value="Marquise Brown">Marquise Brown</option>
+                    <option value="Devonta Smith">Devonta Smith</option>
+                    <option value="Isiah Pacheco">Isiah Pacheco</option>
+                    <option value="Patrick Mahomes">Patrick Mahomes</option>
+                    <option value="Dallas Goedert">Dallas Goedert</option>
+                    <option value="Noah Gray">Noah Gray</option>
+                    <option value="Deandre Hopkins">Deandre Hopkins</option>
+                    <option value="Other Chiefs Player">Other Chiefs Player</option>
+                    <option value="Other Eagles Player">Other Eagles Player</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Comm1">Which commercial plays first?</label>
+                <select id="Comm1" name="Comm1">
+                    <option value="Doritos">Doritos</option>
+                    <option value="Ritz">Ritz</option>
+                    <option value="Lay's">Lay's</option>
+                    <option value="Pringles">Pringles</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Comm2">Which commercial plays first?</label>
+                <select id="Comm2" name="Comm2">
+                    <option value="Budweiser">Budweiser</option>
+                    <option value="Stella Artois">Stella Artois</option>
+                    <option value="Coors">Coors</option>
+                    <option value="Michelob">Michelob</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Comm3">Which commercial plays first?</label>
+                <select id="Comm3" name="Comm3">
+                    <option value="Nerds Candy">Nerds Candy</option>
+                    <option value="Reese's">Reese's</option>
+                    <option value="Haagen-Dazs">Haagen-Dazs</option>
+                    <option value="Totino's">Totino's</option>
+                    <option value="Taco Bell">Taco Bell</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Comm4">Which commercial plays first?</label>
+                <select id="Comm4" name="Comm4">
+                    <option value="Rocket Mortgage">Rocket Mortgage</option>
+                    <option value="Turbo Tax">Turbo Tax</option>
+                    <option value="Nerdwallet">Nerdwallet</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Comm5">Which commercial plays first?</label>
+                <select id="Comm5" name="Comm5">
+                    <option value="DoorDash">DoorDash</option>
+                    <option value="Squarespace">Squarespace</option>
+                    <option value="Instacart">Instacart</option>
+                    <option value="Go Daddy">Go Daddy</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="PrizeDonation">Do you plan to bring a prize to donate to the pool and/or food(prizes generally run $5-$30)?</label>
+                <select id="PrizeDonation" name="PrizeDonation">
+                    <option value="Food">Food</option>
+                    <option value="Prize">Prize</option>
+                    <option value="Both">Both</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+            
+            <div class="loading" id="loadingMessage">
+                Submitting your RSVP...
+            </div>
+            <p id="emailError" class="error-message">This email has already been used to RSVP.</p>
+            <button type="submit" id="submitButton">Submit RSVP</button>
+        </form>
+        
+        <div id="successScreen" class="success-screen">
+            <h2>Thank You for RSVPing!</h2>
+            <img id="bonusImage" class="bonus-image" src="" alt="Bonus Image" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        // Audio handling - trigger on name field focus
+        const music = document.getElementById('backgroundMusic');
+        const nameField = document.getElementById('name');
+        let hasPlayedMusic = false;
+
+        nameField.addEventListener('focus', function() {
+            if (!hasPlayedMusic) {
+                music.play().catch(function(error) {
+                    console.log("Audio playback failed:", error);
+                });
+                hasPlayedMusic = true;
+            }
+        });
+
+        // Form submission
+        document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loadingMessage = document.getElementById('loadingMessage');
+            const submitButton = document.getElementById('submitButton');
+            const emailError = document.getElementById('emailError');
+            const form = document.getElementById('rsvpForm');
+            
+            // Reset error state
+            emailError.style.display = 'none';
+            
+            // Show loading state
+            loadingMessage.style.display = 'block';
+            submitButton.disabled = true;
+            
+            try {
+                // Get all form data
+                const formData = new FormData(this);
+                const formProps = Object.fromEntries(formData);
+                
+                // Generate random number 1-5
+                const randomNum = Math.floor(Math.random() * 5) + 1;
+                
+                // Add bonus result
+                const bonusResult = (randomNum === 3 || randomNum === 4) ? '2 Tickets' : 'No Bonus';
+                formProps.bonusNumber = randomNum;
+                formProps.bonusResult = bonusResult;
+
+                // Submit to Google Apps Script
+                await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify(formProps)
+                });
+
+                // Hide form and show success screen
+                form.style.display = 'none';
+                const successScreen = document.getElementById('successScreen');
+                const bonusImage = document.getElementById('bonusImage');
+                
+                // Show appropriate bonus image
+                bonusImage.src = `Bonus-0${randomNum}.png`;
+                bonusImage.style.display = 'block';
+                successScreen.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('There was an error submitting your RSVP. Please try again.');
+            } finally {
+                loadingMessage.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
