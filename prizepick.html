@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Super Bowl Party Prize Pick</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' script.google.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' script.google.com">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://*.google.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://script.google.com https://*.google.com">
     <style>
         body {
             background-color: black;
@@ -86,6 +86,13 @@
             margin: 20px 0;
         }
 
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin: 10px 0;
+            grid-column: span 2;
+        }
+
         @keyframes spin {
             0% { opacity: 0.3; }
             50% { opacity: 1; }
@@ -116,6 +123,7 @@
             <h2>Winner</h2>
             <div id="winnerName" class="winner-name">Click Spin to Start!</div>
         </div>
+        <div id="errorMessage" class="error-message"></div>
     </div>
 
     <script src="prizepick.js"></script>
