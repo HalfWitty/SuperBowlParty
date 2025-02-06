@@ -127,34 +127,32 @@
         console.log('Fetching data...');
         const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', {
             method: 'GET',
-            mode: 'cors',
+            mode: 'no-cors',
             headers: {
-                'Accept': 'application/json'
+                'Content-Type': 'text/plain',
             }
         });
-        console.log('Response received:', response);
-        const data = await response.json();
-        console.log('Parsed data:', data);
-        names = data.names;
+        
+        // Since no-cors mode doesn't allow reading the response,
+        // we'll need to modify our Apps Script to use JSONP
+        const data = await response.text();
+        console.log('Raw response:', data);
+        
+        try {
+            const jsonData = JSON.parse(data);
+            names = jsonData.names;
+        } catch (e) {
+            console.error('Error parsing JSON:', e);
+            // If we can't parse the JSON, try to extract the names directly
+            names = data.split(',').filter(Boolean);
+        }
+        
         updateDisplay();
     } catch (error) {
         console.error('Error fetching data:', error);
-        // Try again with no-cors as fallback
-        try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec?callback=?', {
-                method: 'GET',
-                mode: 'no-cors'
-            });
-            // Parse JSONP response
-            const text = await response.text();
-            const json = JSON.parse(text.slice(2, -2)); // Remove JSONP callback
-            names = json.names;
-            updateDisplay();
-        } catch (fallbackError) {
-            console.error('Fallback error:', fallbackError);
-        }
     }
 }
+
         function updateDisplay() {
             // Update total count
             document.getElementById('totalCount').textContent = names.length;
