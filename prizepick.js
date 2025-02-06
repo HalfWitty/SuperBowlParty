@@ -2,30 +2,50 @@ let names = [];
 let isSpinning = false;
 
 async function fetchData() {
+    const errorMessageElement = document.getElementById('errorMessage');
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
-            }
+            },
+            mode: 'cors'
         });
         
-        const responseData = await response.text();
-        const data = JSON.parse(responseData);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
         
         if (data && data.status === 'success' && Array.isArray(data.names)) {
-            names = data.names;
+            names = data.names.filter(name => name && typeof name === 'string');
             updateDisplay();
+            errorMessageElement.textContent = '';
         } else {
-            console.error('Invalid data format:', data);
+            throw new Error('Invalid data format received from server');
         }
     } catch (error) {
         console.error('Error fetching data:', error);
+        errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
+        document.getElementById('spinButton').disabled = true;
     }
 }
 
 function updateDisplay() {
-    document.getElementById('totalCount').textContent = names.length;
+    const totalCount = document.getElementById('totalCount');
+    const topFiveList = document.getElementById('topFiveList');
+    const spinButton = document.getElementById('spinButton');
+    
+    if (names.length === 0) {
+        totalCount.textContent = '0';
+        topFiveList.innerHTML = '<div class="name-entry">No entries yet</div>';
+        spinButton.disabled = true;
+        return;
+    }
+
+    totalCount.textContent = names.length;
+    spinButton.disabled = false;
 
     const nameCounts = {};
     names.forEach(name => {
@@ -44,11 +64,11 @@ function updateDisplay() {
             </div>
         `)
         .join('');
-    document.getElementById('topFiveList').innerHTML = topFiveHtml;
+    topFiveList.innerHTML = topFiveHtml || '<div class="name-entry">No entries yet</div>';
 }
 
 function spinWheel() {
-    if (isSpinning) return;
+    if (isSpinning || names.length === 0) return;
     
     const spinButton = document.getElementById('spinButton');
     const winnerDisplay = document.getElementById('winnerName');
@@ -83,5 +103,17 @@ function spinWheel() {
     animate();
 }
 
-document.getElementById('spinButton').addEventListener('click', spinWheel);
+// Add error handling for button clicks when no data is available
+document.getElementById('spinButton').addEventListener('click', () => {
+    if (names.length === 0) {
+        document.getElementById('errorMessage').textContent = 'No names available to pick from';
+        return;
+    }
+    spinWheel();
+});
+
+// Initial data fetch
 fetchData();
+
+// Refresh data every 30 seconds
+setInterval(fetchData, 30000);
