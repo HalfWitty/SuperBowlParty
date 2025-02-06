@@ -4,31 +4,45 @@ let isSpinning = false;
 function fetchData() {
     const errorMessageElement = document.getElementById('errorMessage');
     
-    // Create a new XMLHttpRequest object
-    const xhr = new XMLHttpRequest();
+    // Create a unique callback name
+    const callbackName = 'jsonpCallback_' + Date.now();
     
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) { // Request completed
-            try {
-                const data = JSON.parse(xhr.responseText);
-                if (data && data.status === 'success' && Array.isArray(data.names)) {
-                    names = data.names.filter(name => name && typeof name === 'string');
-                    updateDisplay();
-                    errorMessageElement.textContent = '';
-                } else {
-                    throw new Error('Invalid data format received from server');
-                }
-            } catch (error) {
-                console.error('Error processing data:', error);
-                errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
-                document.getElementById('spinButton').disabled = true;
+    // Create script element
+    const script = document.createElement('script');
+    script.src = 'https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec?callback=' + callbackName;
+    
+    // Define the callback function
+    window[callbackName] = function(data) {
+        try {
+            if (data && data.status === 'success' && Array.isArray(data.names)) {
+                names = data.names.filter(name => name && typeof name === 'string');
+                updateDisplay();
+                errorMessageElement.textContent = '';
+            } else {
+                throw new Error('Invalid data format received from server');
             }
+        } catch (error) {
+            console.error('Error processing data:', error);
+            errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
+            document.getElementById('spinButton').disabled = true;
+        } finally {
+            // Cleanup
+            document.body.removeChild(script);
+            delete window[callbackName];
         }
     };
     
-    // Open and send the request
-    xhr.open('GET', 'https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', true);
-    xhr.send();
+    // Add error handling for script loading
+    script.onerror = function() {
+        console.error('Script loading failed');
+        errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
+        document.getElementById('spinButton').disabled = true;
+        document.body.removeChild(script);
+        delete window[callbackName];
+    };
+    
+    // Add the script to the page
+    document.body.appendChild(script);
 }
 
 function updateDisplay() {
