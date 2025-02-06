@@ -17,6 +17,29 @@ const colors = [
 
 // Create audio element for win sound
 const winSound = new Audio('WinSound.wav');
+winSound.volume = 0;  // Start with volume at 0
+
+function fadeInAudio() {
+    let volume = 0;
+    const targetVolume = 1.3;  // Maximum volume
+    const duration = 10000;  // 10 seconds
+    const steps = 50;  // Number of steps for smooth transition
+    const volumeIncrement = targetVolume / steps;
+    const timeIncrement = duration / steps;
+
+    function incrementVolume() {
+        if (volume < targetVolume) {
+            volume = Math.min(targetVolume, volume + volumeIncrement);
+            winSound.volume = volume;
+            setTimeout(incrementVolume, timeIncrement);
+        }
+    }
+
+     winSound.play().catch(function(error) {
+        console.log("Audio playback failed:", error);
+    });
+    incrementVolume();
+}
 
 const style = document.createElement('style');
 style.textContent = `
@@ -107,39 +130,49 @@ function updateDisplay() {
 }
 
 function fireConfetti() {
-    // First burst
+    // Test if confetti is available
+    if (typeof confetti === 'undefined') {
+        console.error('Confetti library not loaded');
+        return;
+    }
+
+    // Fire confetti with more particles and longer duration
     confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: colors
     });
 
     // Side cannons
     setTimeout(() => {
         confetti({
-            particleCount: 50,
+            particleCount: 75,
             angle: 60,
             spread: 55,
-            origin: { x: 0 }
+            origin: { x: 0, y: 0.5 },
+            colors: colors
         });
         confetti({
-            particleCount: 50,
+            particleCount: 75,
             angle: 120,
             spread: 55,
-            origin: { x: 1 }
+            origin: { x: 1, y: 0.5 },
+            colors: colors
         });
     }, 250);
 
-    // Final burst
+    // Finale
     setTimeout(() => {
         confetti({
-            particleCount: 150,
-            spread: 100,
-            origin: { y: 0.6 }
+            particleCount: 200,
+            spread: 160,
+            origin: { y: 0.6 },
+            colors: colors,
+            startVelocity: 45,
         });
     }, 500);
 }
-
 
 function spinWheel() {
     if (isSpinning || names.length === 0) return;
@@ -196,7 +229,7 @@ function spinWheel() {
             winnerDisplay.classList.add('winner-animation');
 
             // Fire confetti
-            fireConfetti();
+            setTimeout(fireConfetti, 100);       
             
             isSpinning = false;
             spinButton.disabled = false;
