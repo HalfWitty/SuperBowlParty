@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Super Bowl Party Prize Pick</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .top-five, .total-count, .winner-display {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .winner-display {
+            grid-column: span 2;
+            text-align: center;
+        }
+
+        .top-five h2, .total-count h2, .winner-display h2 {
+            margin-top: 0;
+            color: white;
+            font-size: 24px;
+        }
+
+        .name-entry {
+            background-color: #333;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .spin-button {
+            background-color: #0066cc;
+            color: white;
+            width: 150px;
+            height: 150px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 20px auto;
+            display: block;
+            transition: transform 0.2s;
+        }
+        
+        .spin-button:hover {
+            background-color: #0052a3;
+            transform: scale(1.05);
+        }
+
+        .spin-button:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+
+        .winner-name {
+            font-size: 36px;
+            color: #0066cc;
+            margin: 20px 0;
+            min-height: 50px;
+        }
+
+        .total-number {
+            font-size: 48px;
+            color: #0066cc;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        @keyframes spin {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .spinning {
+            animation: spin 0.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-five">
+            <h2>Top 5 Names</h2>
+            <div id="topFiveList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="total-count">
+            <h2>Total Entries</h2>
+            <div class="total-number" id="totalCount">0</div>
+            <button id="spinButton" class="spin-button">Spin to Win</button>
+        </div>
+        
+        <div class="winner-display">
+            <h2>Winner</h2>
+            <div id="winnerName" class="winner-name">Click Spin to Start!</div>
+        </div>
+    </div>
+
+    <script>
+        let names = [];
+        let isSpinning = false;
+
+        // Fetch data from Google Sheet
+        async function fetchData() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec?action=getPrizeList');
+                const data = await response.json();
+                names = data.names;
+                updateDisplay();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function updateDisplay() {
+            // Update total count
+            document.getElementById('totalCount').textContent = names.length;
+
+            // Calculate top 5
+            const nameCounts = {};
+            names.forEach(name => {
+                nameCounts[name] = (nameCounts[name] || 0) + 1;
+            });
+
+            const sortedNames = Object.entries(nameCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 5);
+
+            // Update top 5 list
+            const topFiveHtml = sortedNames
+                .map(([name, count]) => `
+                    <div class="name-entry">
+                        <span>${name}</span>
+                        <span>${count}</span>
+                    </div>
+                `)
+                .join('');
+            document.getElementById('topFiveList').innerHTML = topFiveHtml;
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            const spinButton = document.getElementById('spinButton');
+            const winnerDisplay = document.getElementById('winnerName');
+            
+            isSpinning = true;
+            spinButton.disabled = true;
+            winnerDisplay.classList.add('spinning');
+            
+            let duration = 3000;
+            let interval = 50;
+            let startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / duration;
+                
+                if (elapsed < duration) {
+                    const randomName = names[Math.floor(Math.random() * names.length)];
+                    winnerDisplay.textContent = randomName;
+                    
+                    // Slow down the animation
+                    interval = 50 + (progress * 200);
+                    setTimeout(animate, interval);
+                } else {
+                    // Select final winner
+                    const winner = names[Math.floor(Math.random() * names.length)];
+                    winnerDisplay.textContent = winner;
+                    winnerDisplay.classList.remove('spinning');
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                }
+            }
+            
+            animate();
+        }
+
+        // Add event listeners
+        document.getElementById('spinButton').addEventListener('click', spinWheel);
+
+        // Initial load
+        fetchData();
+    </script>
+</body>
+</html>
