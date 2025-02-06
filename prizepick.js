@@ -106,6 +106,41 @@ function updateDisplay() {
     topFiveList.innerHTML = topFiveHtml || '<div class="name-entry">No entries yet</div>';
 }
 
+function fireConfetti() {
+    // First burst
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+
+    // Side cannons
+    setTimeout(() => {
+        confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+        });
+        confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+        });
+    }, 250);
+
+    // Final burst
+    setTimeout(() => {
+        confetti({
+            particleCount: 150,
+            spread: 100,
+            origin: { y: 0.6 }
+        });
+    }, 500);
+}
+
+
 function spinWheel() {
     if (isSpinning || names.length === 0) return;
     
@@ -123,8 +158,7 @@ function spinWheel() {
     spinButton.disabled = true;
     winnerDisplay.classList.add('spinning');
     
-    let duration = 3000;
-    let interval = 50;
+    let duration = 12000; // Changed to 13 seconds
     let startTime = Date.now();
     let colorIndex = 0;
     
@@ -138,7 +172,19 @@ function spinWheel() {
             winnerDisplay.style.color = colors[colorIndex];
             colorIndex = (colorIndex + 1) % colors.length;
             
-            interval = 50 + (progress * 200);
+            // Adjust interval based on progress to slow down gradually
+            let interval;
+            if (progress < 0.3) {
+                // Start fast - 50ms between changes
+                interval = 50;
+            } else if (progress < 0.7) {
+                // Gradually slow down - 50ms to 200ms
+                interval = 50 + (progress * 300);
+            } else {
+                // Final slowdown - 200ms to 500ms
+                interval = 200 + ((progress - 0.7) * 1000);
+            }
+            
             setTimeout(animate, interval);
         } else {
             const winner = names[Math.floor(Math.random() * names.length)];
@@ -148,6 +194,9 @@ function spinWheel() {
             
             // Add winner animation
             winnerDisplay.classList.add('winner-animation');
+
+            // Fire confetti
+            fireConfetti();
             
             isSpinning = false;
             spinButton.disabled = false;
@@ -156,7 +205,6 @@ function spinWheel() {
     
     animate();
 }
-
 // Add error handling for button clicks when no data is available
 document.getElementById('spinButton').addEventListener('click', () => {
     if (names.length === 0) {
