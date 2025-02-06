@@ -1,17 +1,46 @@
 let names = [];
 let isSpinning = false;
 
+// Array of colors for the cycling names
+const colors = [
+    '#FF6B6B', // Coral Red
+    '#4ECDC4', // Turquoise
+    '#45B7D1', // Sky Blue
+    '#96CEB4', // Sage Green
+    '#FFEEAD', // Cream Yellow
+    '#D4A5A5', // Dusty Rose
+    '#9B59B6', // Purple
+    '#3498DB', // Blue
+    '#E67E22', // Orange
+    '#2ECC71'  // Green
+];
+
+// Create audio element for win sound
+const winSound = new Audio('WinSound.wav');
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes winnerPop {
+        0% { transform: scale(1); }
+        50% { transform: scale(2); }
+        75% { transform: scale(1.75); }
+        100% { transform: scale(2); }
+    }
+    .winner-animation {
+        animation: winnerPop 0.5s ease-out forwards;
+    }
+`;
+document.head.appendChild(style);
+
 function fetchData() {
     const errorMessageElement = document.getElementById('errorMessage');
     
-    // Create a unique callback name
     const callbackName = 'jsonpCallback_' + Date.now();
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec?callback=' + callbackName;
     
-    // Create script element
     const script = document.createElement('script');
-    script.src = 'https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec?callback=' + callbackName;
+    script.src = scriptUrl;
     
-    // Define the callback function
     window[callbackName] = function(data) {
         try {
             if (data && data.status === 'success' && Array.isArray(data.names)) {
@@ -26,13 +55,11 @@ function fetchData() {
             errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
             document.getElementById('spinButton').disabled = true;
         } finally {
-            // Cleanup
             document.body.removeChild(script);
             delete window[callbackName];
         }
     };
     
-    // Add error handling for script loading
     script.onerror = function() {
         console.error('Script loading failed');
         errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
@@ -41,7 +68,6 @@ function fetchData() {
         delete window[callbackName];
     };
     
-    // Add the script to the page
     document.body.appendChild(script);
 }
 
@@ -86,6 +112,13 @@ function spinWheel() {
     const spinButton = document.getElementById('spinButton');
     const winnerDisplay = document.getElementById('winnerName');
     
+    // Reset any previous winner animation
+    winnerDisplay.classList.remove('winner-animation');
+    
+    winSound.play().catch(function(error) {
+        console.log("Audio playback failed:", error);
+    });
+    
     isSpinning = true;
     spinButton.disabled = true;
     winnerDisplay.classList.add('spinning');
@@ -93,6 +126,7 @@ function spinWheel() {
     let duration = 3000;
     let interval = 50;
     let startTime = Date.now();
+    let colorIndex = 0;
     
     function animate() {
         const elapsed = Date.now() - startTime;
@@ -101,13 +135,20 @@ function spinWheel() {
         if (elapsed < duration) {
             const randomName = names[Math.floor(Math.random() * names.length)];
             winnerDisplay.textContent = randomName;
+            winnerDisplay.style.color = colors[colorIndex];
+            colorIndex = (colorIndex + 1) % colors.length;
             
             interval = 50 + (progress * 200);
             setTimeout(animate, interval);
         } else {
             const winner = names[Math.floor(Math.random() * names.length)];
             winnerDisplay.textContent = winner;
+            winnerDisplay.style.color = '#0066cc';
             winnerDisplay.classList.remove('spinning');
+            
+            // Add winner animation
+            winnerDisplay.classList.add('winner-animation');
+            
             isSpinning = false;
             spinButton.disabled = false;
         }
@@ -130,3 +171,4 @@ fetchData();
 
 // Refresh data every 30 seconds
 setInterval(fetchData, 30000);
+
