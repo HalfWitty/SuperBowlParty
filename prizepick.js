@@ -15,31 +15,8 @@ const colors = [
     '#2ECC71'  // Green
 ];
 
-// Create audio element for win sound
+// Create audio object
 const winSound = new Audio('WinSound.wav');
-winSound.volume = 0;  // Start with volume at 0
-
-function fadeInAudio() {
-    let volume = 0;
-    const targetVolume = 1;  // Maximum volume
-    const duration = 10000;  // 10 seconds
-    const steps = 50;  // Number of steps for smooth transition
-    const volumeIncrement = targetVolume / steps;
-    const timeIncrement = duration / steps;
-
-    function incrementVolume() {
-        if (volume < targetVolume) {
-            volume = Math.min(targetVolume, volume + volumeIncrement);
-            winSound.volume = volume;
-            setTimeout(incrementVolume, timeIncrement);
-        }
-    }
-
-     winSound.play().catch(function(error) {
-        console.log("Audio playback failed:", error);
-    });
-    incrementVolume();
-}
 
 const style = document.createElement('style');
 style.textContent = `
@@ -183,9 +160,10 @@ function spinWheel() {
     // Reset any previous winner animation
     winnerDisplay.classList.remove('winner-animation');
     
-    winSound.play().catch(function(error) {
-        console.log("Audio playback failed:", error);
-    });
+   // Play sound on button press
+    winSound.currentTime = 0; // Reset to start
+    winSound.volume = 1;    // Set volume to 80%
+    winSound.play().catch(error => console.log('Audio play failed:', error));
     
     isSpinning = true;
     spinButton.disabled = true;
