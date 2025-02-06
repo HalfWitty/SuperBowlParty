@@ -7,9 +7,11 @@ async function fetchData() {
         const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', {
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
-            mode: 'cors'
+            mode: 'cors',
+            credentials: 'omit'
         });
         
         if (!response.ok) {
