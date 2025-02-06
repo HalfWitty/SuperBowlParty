@@ -21,7 +21,7 @@ winSound.volume = 0;  // Start with volume at 0
 
 function fadeInAudio() {
     let volume = 0;
-    const targetVolume = 1.3;  // Maximum volume
+    const targetVolume = 1;  // Maximum volume
     const duration = 10000;  // 10 seconds
     const steps = 50;  // Number of steps for smooth transition
     const volumeIncrement = targetVolume / steps;
