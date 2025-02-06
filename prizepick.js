@@ -1,37 +1,34 @@
 let names = [];
 let isSpinning = false;
 
-async function fetchData() {
+function fetchData() {
     const errorMessageElement = document.getElementById('errorMessage');
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors',
-            credentials: 'omit'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    
+    // Create a new XMLHttpRequest object
+    const xhr = new XMLHttpRequest();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) { // Request completed
+            try {
+                const data = JSON.parse(xhr.responseText);
+                if (data && data.status === 'success' && Array.isArray(data.names)) {
+                    names = data.names.filter(name => name && typeof name === 'string');
+                    updateDisplay();
+                    errorMessageElement.textContent = '';
+                } else {
+                    throw new Error('Invalid data format received from server');
+                }
+            } catch (error) {
+                console.error('Error processing data:', error);
+                errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
+                document.getElementById('spinButton').disabled = true;
+            }
         }
-        
-        const data = await response.json();
-        
-        if (data && data.status === 'success' && Array.isArray(data.names)) {
-            names = data.names.filter(name => name && typeof name === 'string');
-            updateDisplay();
-            errorMessageElement.textContent = '';
-        } else {
-            throw new Error('Invalid data format received from server');
-        }
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        errorMessageElement.textContent = 'Error loading names. Please refresh the page to try again.';
-        document.getElementById('spinButton').disabled = true;
-    }
+    };
+    
+    // Open and send the request
+    xhr.open('GET', 'https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec', true);
+    xhr.send();
 }
 
 function updateDisplay() {
