@@ -158,7 +158,7 @@ function spinWheel() {
     spinButton.disabled = true;
     winnerDisplay.classList.add('spinning');
     
-    let duration = 12000; // Changed to 13 seconds
+    let duration = 10000; // Changed to 13 seconds
     let startTime = Date.now();
     let colorIndex = 0;
     
