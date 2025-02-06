@@ -123,15 +123,18 @@
 
         // Fetch data from Google Sheet
         async function fetchData() {
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec');                
-                const data = await response.json();
-                names = data.names;
-                updateDisplay();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
+    try {
+        console.log('Fetching data...');
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwXsg-5vW2_89zyLUQhBSengSB-FUBJivMZdSgReQ83SuTaG2botkPshltorQiGJPKo2A/exec');
+        console.log('Response received:', response);
+        const data = await response.json();
+        console.log('Parsed data:', data);
+        names = data.names;
+        updateDisplay();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
 
         function updateDisplay() {
             // Update total count
