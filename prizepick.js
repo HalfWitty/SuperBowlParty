@@ -160,10 +160,10 @@ function spinWheel() {
     // Reset any previous winner animation
     winnerDisplay.classList.remove('winner-animation');
     
-   // Play sound on button press
-    winSound.currentTime = 0; // Reset to start
-    winSound.volume = 1;    // Set volume to 80%
-    winSound.play().catch(error => console.log('Audio play failed:', error));
+   // Play the win sound
+    winSound.play().catch(function(error) {
+        console.log("Audio playback failed:", error);
+    });
     
     isSpinning = true;
     spinButton.disabled = true;
