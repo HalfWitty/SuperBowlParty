@@ -18,20 +18,6 @@ const colors = [
 // Create audio object
 const winSound = new Audio('WinSound.wav');
 
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes winnerPop {
-        0% { transform: scale(1); }
-        50% { transform: scale(2); }
-        75% { transform: scale(1.75); }
-        100% { transform: scale(2); }
-    }
-    .winner-animation {
-        animation: winnerPop 0.5s ease-out forwards;
-    }
-`;
-document.head.appendChild(style);
-
 function fetchData() {
     const errorMessageElement = document.getElementById('errorMessage');
     
@@ -157,9 +143,6 @@ function spinWheel() {
     const spinButton = document.getElementById('spinButton');
     const winnerDisplay = document.getElementById('winnerName');
     
-    // Reset any previous winner animation
-    winnerDisplay.classList.remove('winner-animation');
-    
    // Play the win sound
     winSound.play().catch(function(error) {
         console.log("Audio playback failed:", error);
@@ -200,11 +183,10 @@ function spinWheel() {
         } else {
             const winner = names[Math.floor(Math.random() * names.length)];
             winnerDisplay.textContent = winner;
-            winnerDisplay.style.color = '#0066cc';
+            winnerDisplay.style.color = '#2ECC71';
             winnerDisplay.classList.remove('spinning');
             
-            // Add winner animation
-            winnerDisplay.classList.add('winner-animation');
+           
 
             // Fire confetti
             setTimeout(fireConfetti, 100);       
